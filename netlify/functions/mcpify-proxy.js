@@ -40,7 +40,7 @@ function getPostEndpoint(url) {
       res.on("data", (chunk) => {
         buffer += chunk;
 
-        const match = buffer.match(/data: (\\/sse\\/message\\?[^\\n]+)/);
+        const match = buffer.match(/data: (\/sse\/message\?[^\n]+)/);
         if (match) {
           const relative = match[1].trim();
           resolve("https://agent.mcpify.ai" + relative);
@@ -105,3 +105,4 @@ function postToMcpify(url, data) {
     req.end();
   });
 }
+

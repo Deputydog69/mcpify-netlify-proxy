@@ -98,7 +98,3 @@ function postToMcpify(url, data) {
     req.end();
   });
 }
-
-    req.end();
-  });
-}

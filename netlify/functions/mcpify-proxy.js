@@ -52,6 +52,12 @@ function getPostEndpoint(url) {
     });
 
     req.on("error", reject);
+
+    // ⏱ Timeout after 8 seconds
+    setTimeout(() => {
+      req.destroy();
+      reject(new Error("Timed out waiting for SSE endpoint"));
+    }, 8000);
   });
 }
 
@@ -98,3 +104,4 @@ function postToMcpify(url, data) {
     req.end();
   });
 }
+

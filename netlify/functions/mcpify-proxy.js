@@ -54,7 +54,6 @@ function getPostEndpoint(url) {
 
     req.on("error", reject);
 
-    // ⏱ Timeout after 8 seconds
     setTimeout(() => {
       req.destroy();
       reject(new Error("Timed out waiting for SSE endpoint"));
@@ -81,22 +80,8 @@ function postToMcpify(url, data) {
       let body = "";
       res.on("data", (chunk) => (body += chunk));
       res.on("end", () => {
-        try {
-          const parsed = JSON.parse(body);
-
-          if (!parsed.content || !Array.isArray(parsed.content) || !parsed.content[0]?.text) {
-            console.error("Unexpected MCPify response:", parsed);
-            reject(new Error("Unexpected format from MCPify"));
-            return;
-          }
-
-          const extracted = JSON.parse(parsed.content[0].text);
-          resolve(extracted);
-        } catch (err) {
-          console.error("Parsing error:", err);
-          console.error("Raw response body:", body);
-          reject(new Error("Invalid JSON from MCPify"));
-        }
+        console.log("🔍 RAW MCPify RESPONSE:", body);
+        resolve({ raw: body });  // Return raw body for debugging
       });
     });
 
@@ -105,4 +90,3 @@ function postToMcpify(url, data) {
     req.end();
   });
 }
-

@@ -39,7 +39,7 @@ function getPostEndpoint(url) {
 
       res.on("data", (chunk) => {
         buffer += chunk;
-        const match = buffer.match(/event: endpoint\ndata: (.+)/);
+        const match = buffer.match(/event: endpoint\\ndata: (.+)/);
         if (match) {
           const relative = match[1].trim();
           resolve("https://agent.mcpify.ai" + relative);
@@ -76,9 +76,18 @@ function postToMcpify(url, data) {
       res.on("end", () => {
         try {
           const parsed = JSON.parse(body);
+
+          if (!parsed.content || !Array.isArray(parsed.content) || !parsed.content[0]?.text) {
+            console.error("Unexpected MCPify response:", parsed);
+            reject(new Error("Unexpected format from MCPify"));
+            return;
+          }
+
           const extracted = JSON.parse(parsed.content[0].text);
           resolve(extracted);
         } catch (err) {
+          console.error("Parsing error:", err);
+          console.error("Raw response body:", body);
           reject(new Error("Invalid JSON from MCPify"));
         }
       });
@@ -86,6 +95,10 @@ function postToMcpify(url, data) {
 
     req.on("error", reject);
     req.write(payload);
+    req.end();
+  });
+}
+
     req.end();
   });
 }
